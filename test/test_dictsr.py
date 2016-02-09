@@ -69,6 +69,19 @@ class DictionaryTestCase(unittest.TestCase):
         if os.path.exists(self.dirname):
             os.rmdir(self.dirname)
 
+    def test_dir_init(self):
+        self.assertTrue(os.path.isfile(self.path))
+
+    def test_argument_types(self):
+        with self.assertRaisesRegex(TypeError, "db_path must be a string"):
+            test_dict = dictsr.Dictionary(1)
+
+    def test_connection_type(self):
+        self.assertIs(type(self.test_dict.conn), sqlite3.Connection)
+
+    def test_cursor_type(self):
+        self.assertIs(type(self.test_dict.c), sqlite3.Cursor)
+
     def test_table_creation(self):
         compare = [('table', 'dictionary', 'dictionary', 2)]
         self.test_dict.c.execute('''
