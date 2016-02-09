@@ -52,5 +52,32 @@ class DatabaseTestCase(unittest.TestCase):
         database = dictsr.Database(self.path)
         self.assertIs(type(database.c), sqlite3.Cursor)
 
+class DictionaryTestCase(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(self):
+        self.path = "test/databases/test_db"
+        self.dirname = os.path.dirname(self.path)
+        self.test_dict = dictsr.Dictionary(self.path)
+
+    @classmethod
+    def tearDownClass(self):
+        del self.test_dict
+        if os.path.exists(self.path):
+            os.remove(self.path)
+        if os.path.exists(self.dirname):
+            os.rmdir(self.dirname)
+
+    def test_table_creation(self):
+        compare = [('table', 'dictionary', 'dictionary', 2)]
+        self.test_dict.c.execute('''
+              SELECT type, name, tbl_name, rootpage
+              FROM sqlite_master
+          ''')
+        self.assertEqual(self.test_dict.c.fetchall(), compare)
+
+    def test_create_when_table_already_exists(self):
+        test_db = dictsr.Dictionary(self.path)
+
 if __name__ == '__main__':
     unittest.main()

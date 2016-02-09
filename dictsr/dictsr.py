@@ -13,6 +13,20 @@ class Database:
         else:
             raise TypeError("db_path must be a string")
 
+class Dictionary(Database):
+    pass
+    def __init__(self, database):
+      super(Dictionary, self).__init__(database)
+
+      self.c.execute('''
+                      CREATE TABLE IF NOT EXISTS dictionary
+                        (
+                           word        TEXT,
+                           function    TEXT,
+                           definitions TEXT
+                        )
+                      ''')
+
 class Word:
     def __init__(self, word, function, definitions):
         self.word = word
