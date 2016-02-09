@@ -26,18 +26,21 @@ class WordTestCase(unittest.TestCase):
 
 class DatabaseTestCase(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         self.path = "test/databases/test_db"
         self.dirname = os.path.dirname(self.path)
+        self.database = dictsr.Database(self.path)
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(self):
+        del self.database
         if os.path.exists(self.path):
             os.remove(self.path)
         if os.path.exists(self.dirname):
             os.rmdir(self.dirname)
 
     def test_dir_init(self):
-        database = dictsr.Database(self.path)
         self.assertTrue(os.path.isfile(self.path))
 
     def test_argument_types(self):
@@ -45,12 +48,10 @@ class DatabaseTestCase(unittest.TestCase):
             database = dictsr.Database(1)
 
     def test_connection_type(self):
-        database = dictsr.Database(self.path)
-        self.assertIs(type(database.conn), sqlite3.Connection)
+        self.assertIs(type(self.database.conn), sqlite3.Connection)
 
     def test_cursor_type(self):
-        database = dictsr.Database(self.path)
-        self.assertIs(type(database.c), sqlite3.Cursor)
+        self.assertIs(type(self.database.c), sqlite3.Cursor)
 
 class DictionaryTestCase(unittest.TestCase):
 
