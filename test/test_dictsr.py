@@ -45,10 +45,10 @@ class DatabaseTestCase(unittest.TestCase):
 
     def setUp(self):
         setUpDb(self, dictsr.Database)
-        
+
     def tearDown(self):
         tearDownDb(self)
-        
+
     def test_dir_init(self):
         self.assertTrue(os.path.isfile(self.path))
 
@@ -66,10 +66,10 @@ class DictionarySetUpTestCase(unittest.TestCase):
 
     def setUp(self):
         setUpDb(self, dictsr.Dictionary)
-        
+
     def tearDown(self):
         tearDownDb(self)
-        
+
     def test_dir_init(self):
         self.assertTrue(os.path.isfile(self.path))
 
