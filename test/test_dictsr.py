@@ -1,6 +1,5 @@
 import unittest
 import os.path
-import time
 import sqlite3
 
 from dictsr import dictsr
