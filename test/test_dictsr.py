@@ -14,12 +14,10 @@ class FunctionEnumTestCase(unittest.TestCase):
 
 class WordTestCase(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(self):
+    def setUp(self):
         self.test_word = dictsr.Word("Word", [("Fn1", "Def1"), ("Fn2", "Def2")])
 
-    @classmethod
-    def tearDownClass(self):
+    def tearDown(self):
         del self.test_word
 
     def test_init(self):
@@ -32,14 +30,12 @@ class WordTestCase(unittest.TestCase):
 
 class DatabaseTestCase(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(self):
+    def setUp(self):
         self.path = "test/databases/test_db"
         self.dirname = os.path.dirname(self.path)
         self.database = dictsr.Database(self.path)
 
-    @classmethod
-    def tearDownClass(self):
+    def tearDown(self):
         del self.database
         if os.path.exists(self.path):
             os.remove(self.path)
@@ -61,14 +57,12 @@ class DatabaseTestCase(unittest.TestCase):
 
 class DictionarySetUpTestCase(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(self):
+    def setUp(self):
         self.path = "test/databases/test_db"
         self.dirname = os.path.dirname(self.path)
         self.test_dict = dictsr.Dictionary(self.path)
 
-    @classmethod
-    def tearDownClass(self):
+    def tearDown(self):
         del self.test_dict
         if os.path.exists(self.path):
             os.remove(self.path)
