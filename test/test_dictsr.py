@@ -28,17 +28,17 @@ class WordTestCase(unittest.TestCase):
             type_test = dictsr.Word("Word", "Function", "Def1")
 
 def setUpDb(self, db):
-        self.path = "test/databases/test.db"
-        self.dirname = os.path.dirname(self.path)
-        self.test_db = db(self.path)
+    self.path = "test/databases/test.db"
+    self.dirname = os.path.dirname(self.path)
+    self.test_db = db(self.path)
 
 def tearDownDb(self):
-        self.test_db.conn.close()
-        del self.test_db
-        if os.path.exists(self.path):
-            os.remove(self.path)
-        if os.path.exists(self.dirname):
-            os.rmdir(self.dirname)
+    self.test_db.conn.close()
+    del self.test_db
+    if os.path.exists(self.path):
+        os.remove(self.path)
+    if os.path.exists(self.dirname):
+        os.rmdir(self.dirname)
 
 class DatabaseTestCase(unittest.TestCase):
 
