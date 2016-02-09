@@ -51,6 +51,16 @@ class Dictionary(Database):
 
         self.conn.commit()
 
+    def get_word_list(self):
+        self.c.execute('''
+            SELECT word
+            FROM dictionary
+        ''')
+
+        extr_words = [x[0] for x in self.c.fetchall()]
+
+        return list(set(extr_words))
+
 class Word:
     def __init__(self, word, definitions):
         self.word = word

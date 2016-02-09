@@ -139,5 +139,21 @@ class DictionaryAddWordTestCase(unittest.TestCase):
             self.test_db.as_SQL_tuples(self.test_word)
         )
 
+class DictionaryGetWordTestCase(unittest.TestCase):
+    def setUp(self):
+        setUpDb(self, dictsr.Dictionary)
+        setUpWord(self, "Word1")
+        self.test_db.add_word(self.test_word)
+        setUpWord(self, "Word2")
+        self.test_db.add_word(self.test_word)
+
+    def tearDown(self):
+        tearDownDb(self)
+
+    def test_get_word_from_db(self):
+        extracted_words = self.test_db.get_word_list()
+
+        self.assertEqual(set(extracted_words), set(['Word1', 'Word2']))
+
 if __name__ == '__main__':
     unittest.main()
