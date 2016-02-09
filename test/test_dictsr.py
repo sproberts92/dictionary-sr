@@ -5,6 +5,13 @@ import sqlite3
 
 from dictsr import dictsr
 
+class FunctionEnumTestCase(unittest.TestCase):
+    def testEnumVaues(self):
+        self.assertEqual(dictsr.Function.Noun.value, 1)
+        self.assertEqual(dictsr.Function.Verb.value, 2)
+        self.assertEqual(dictsr.Function.Adjective.value, 3)
+        self.assertEqual(dictsr.Function.Adverb.value, 4)
+
 class WordTestCase(unittest.TestCase):
 
     @classmethod
@@ -92,6 +99,11 @@ class DictionaryTestCase(unittest.TestCase):
 
     def test_create_when_table_already_exists(self):
         test_db = dictsr.Dictionary(self.path)
+
+    def test_as_SQL_tuple(self):
+        word = Word("Word", "Function", ["Def1", "Def2"])
+        result = self.test_dict.as_SQL_tuple(word)
+        assertEqual(result, ("Word", "Function", ["Def1", "Def2"]))
 
 if __name__ == '__main__':
     unittest.main()

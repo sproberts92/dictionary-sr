@@ -1,5 +1,12 @@
 import sqlite3 as sql
 import os.path
+from enum import Enum
+
+class Function(Enum):
+    Noun = 1
+    Verb = 2
+    Adjective = 3
+    Adverb = 4
 
 class Database:
     def __init__(self, db_path):
