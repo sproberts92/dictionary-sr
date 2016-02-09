@@ -16,7 +16,7 @@ class WordTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        self.test_word = dictsr.Word("Word", "Function", ["Def1", "Def2"])
+        self.test_word = dictsr.Word("Word", [("Fn1", "Def1"), ("Fn2", "Def2")])
 
     @classmethod
     def tearDownClass(self):
@@ -24,8 +24,7 @@ class WordTestCase(unittest.TestCase):
 
     def test_init(self):
         self.assertEqual(self.test_word.word, "Word")
-        self.assertEqual(self.test_word.function, "Function")
-        self.assertEqual(self.test_word.definitions, ["Def1", "Def2"])
+        self.assertEqual(self.test_word.definitions, [("Fn1", "Def1"), ("Fn2", "Def2")])
 
     def test_no_list_definitions(self):
         with self.assertRaises(TypeError):
@@ -60,7 +59,7 @@ class DatabaseTestCase(unittest.TestCase):
     def test_cursor_type(self):
         self.assertIs(type(self.database.c), sqlite3.Cursor)
 
-class DictionaryTestCase(unittest.TestCase):
+class DictionarySetUpTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
@@ -91,19 +90,62 @@ class DictionaryTestCase(unittest.TestCase):
 
     def test_table_creation(self):
         compare = [('table', 'dictionary', 'dictionary', 2)]
+
         self.test_dict.c.execute('''
-              SELECT type, name, tbl_name, rootpage
-              FROM sqlite_master
-          ''')
+            SELECT type, name, tbl_name, rootpage
+            FROM sqlite_master
+        ''')
+
         self.assertEqual(self.test_dict.c.fetchall(), compare)
 
     def test_create_when_table_already_exists(self):
         test_db = dictsr.Dictionary(self.path)
 
-    def test_as_SQL_tuple(self):
-        word = Word("Word", "Function", ["Def1", "Def2"])
-        result = self.test_dict.as_SQL_tuple(word)
-        assertEqual(result, ("Word", "Function", ["Def1", "Def2"]))
+class DictionaryAddWordTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.path = "test/databases/test_db"
+        self.dirname = os.path.dirname(self.path)
+        self.test_dict = dictsr.Dictionary(self.path)
+        self.test_word = dictsr.Word("Word", [("Fn1", "Def1"), ("Fn2", "Def2")])
+
+    def tearDown(self):
+        del self.test_dict
+        if os.path.exists(self.path):
+            os.remove(self.path)
+        if os.path.exists(self.dirname):
+            os.rmdir(self.dirname)
+
+    def test_as_SQL_tuples(self):
+        result = self.test_dict.as_SQL_tuples(self.test_word)
+        self.assertEqual(result, [("Word", "Fn1", "Def1"),("Word", "Fn2", "Def2")])
+
+    def test_add_word(self):
+        self.test_dict.add_word(self.test_word)
+
+        self.test_dict.c.execute('''
+            SELECT *
+            FROM dictionary
+        ''')
+
+        self.assertEqual(
+            self.test_dict.c.fetchall(),
+            self.test_dict.as_SQL_tuples(self.test_word)
+        )
+
+    def test_uniqueness_of_entries(self):
+        self.test_dict.add_word(self.test_word)
+        self.test_dict.add_word(self.test_word)
+
+        self.test_dict.c.execute('''
+            SELECT *
+            FROM dictionary
+        ''')
+
+        self.assertEqual(
+            self.test_dict.c.fetchall(),
+            self.test_dict.as_SQL_tuples(self.test_word)
+        )
 
 if __name__ == '__main__':
     unittest.main()
