@@ -1,3 +1,18 @@
+import sqlite3 as sql
+import os.path
+
+class Database:
+    def __init__(self, db_path):
+        if type(db_path) is str:
+            dirname = os.path.dirname(db_path)
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
+
+            self.conn = sql.connect(db_path)
+            self.c = self.conn.cursor()
+        else:
+            raise TypeError("db_path must be a string")
+
 class Word:
     def __init__(self, word, function, definitions):
         self.word = word
