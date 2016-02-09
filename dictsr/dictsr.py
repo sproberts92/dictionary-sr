@@ -41,7 +41,7 @@ class Dictionary(Database):
         self.c.execute('''
             SELECT *
             FROM dictionary
-            WHERE word = {w}
+            WHERE word = '{w}'
         '''.format(w=word.word))
 
         current_words = self.c.fetchall()
