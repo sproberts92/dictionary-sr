@@ -96,12 +96,14 @@ class DictionarySetUpTestCase(unittest.TestCase):
     def test_create_when_table_already_exists(self):
         test_db = dictsr.Dictionary(self.path)
 
+def setUpWord(self, word):
+    self.test_word = dictsr.Word(word, [("Fn1", "Def1"), ("Fn2", "Def2")])
 
 class DictionaryAddWordTestCase(unittest.TestCase):
 
     def setUp(self):
         setUpDb(self, dictsr.Dictionary)
-        self.test_word = dictsr.Word("Word", [("Fn1", "Def1"), ("Fn2", "Def2")])
+        setUpWord(self, "Word")
 
     def tearDown(self):
         tearDownDb(self)
