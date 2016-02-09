@@ -154,5 +154,11 @@ class DictionaryGetWordTestCase(unittest.TestCase):
 
         self.assertEqual(set(extracted_words), set(['Word1', 'Word2']))
 
+    def test_get_entry(self):
+        entry = self.test_db.get_entry("Word2")
+
+        self.assertEqual(entry.word, self.test_word.word)
+        self.assertEqual(set(entry.definitions), set(self.test_word.definitions))
+
 if __name__ == '__main__':
     unittest.main()

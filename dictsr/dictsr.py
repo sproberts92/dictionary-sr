@@ -61,6 +61,15 @@ class Dictionary(Database):
 
         return list(set(extr_words))
 
+    def get_entry(self, word_str):
+        self.c.execute('''
+            SELECT *
+            FROM dictionary
+            WHERE word = '{w}'
+        '''.format(w=word_str))
+
+        return Word.from_SQL_tuple(self.c.fetchall())
+
 class Word:
     def __init__(self, word, definitions):
         self.word = word
@@ -69,3 +78,11 @@ class Word:
             self.definitions = definitions
         else:
             raise TypeError("definitions must be a list of strings")
+
+    @classmethod
+    def from_SQL_tuple(cls, sql_tuple):
+        
+        name = sql_tuple[0][0]
+        defs = [(x[1], x[2]) for x in sql_tuple]
+
+        return cls(name, defs)
