@@ -1,5 +1,6 @@
 import sqlite3 as sql
 import os.path
+import tkinter as tk
 from enum import Enum
 
 class Function(Enum):
@@ -45,7 +46,8 @@ class Dictionary(Database):
         '''.format(w=word.word))
 
         current_words = self.c.fetchall()
-        to_insert = [w for w in self.as_SQL_tuples(word) if w not in current_words]
+        to_insert = [w for w in self.as_SQL_tuples(word) 
+                     if w not in current_words]
 
         self.c.executemany('INSERT INTO dictionary VALUES (?,?,?)', to_insert)
 
@@ -86,3 +88,29 @@ class Word:
         defs = [(x[1], x[2]) for x in sql_tuple]
 
         return cls(name, defs)
+
+class Controller:
+    def __init__(self):
+        self.model = Model(self)
+        self.view  = View(self)
+
+class View(tk.Frame):    
+    def __init__(self, vc):
+        self.vc = vc
+        self.root = tk.Tk()
+
+        self.loadView()
+        self.root.mainloop()
+    
+    def loadView(self):
+        pass
+
+class Model:
+    def __init__(self, vc):
+        pass
+
+def main():
+    app = Controller()
+
+if __name__ == '__main__':
+    main()
