@@ -95,9 +95,13 @@ class Controller:
         self.view  = View(self)
 
         self.populate_word_list()
+        self.populate_definition()
 
     def populate_word_list(self):
         self.view.set_word_list(self.model.get_word_list())
+
+    def populate_definition(self):
+        self.view.insert_into_text_area("Three")
 
 class View(tk.Frame):    
     def __init__(self, vc):
@@ -110,7 +114,10 @@ class View(tk.Frame):
         self.word_list = tk.Listbox(self.root)
         self.word_list.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
 
-        self.root.columnconfigure(0, weight=1)
+        self.text_area = tk.Text(self.root, state=tk.DISABLED)
+        self.text_area.grid(row=0, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
+
+        self.root.columnconfigure(1, weight=1)
         self.root.rowconfigure(0, weight=1)
 
     def init_data(self):
@@ -120,12 +127,20 @@ class View(tk.Frame):
         for w in words:
             self.word_list.insert(tk.END, w)
 
+    def insert_into_text_area(self, text):
+        self.text_area.configure(state=tk.NORMAL)
+        self.text_area.insert(tk.END, text)
+        self.text_area.configure(state=tk.DISABLED)
+
 class Model:
     def __init__(self, vc):
         pass
-
+        
     def get_word_list(self):
         return ['One', 'Two']
+
+    def get_word(self):
+        pass
 
 def main():
     app = Controller()
