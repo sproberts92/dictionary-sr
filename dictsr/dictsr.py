@@ -94,23 +94,42 @@ class Controller:
         self.model = Model(self)
         self.view  = View(self)
 
+        self.populate_word_list()
+
+    def populate_word_list(self):
+        self.view.set_word_list(self.model.get_word_list())
+
 class View(tk.Frame):    
     def __init__(self, vc):
         self.vc = vc
         self.root = tk.Tk()
 
         self.loadView()
-        self.root.mainloop()
     
     def loadView(self):
+        self.word_list = tk.Listbox(self.root)
+        self.word_list.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
+
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
+    def init_data(self):
         pass
+
+    def set_word_list(self, words):
+        for w in words:
+            self.word_list.insert(tk.END, w)
 
 class Model:
     def __init__(self, vc):
         pass
 
+    def get_word_list(self):
+        return ['One', 'Two']
+
 def main():
     app = Controller()
+    app.view.root.mainloop()
 
 if __name__ == '__main__':
     main()
