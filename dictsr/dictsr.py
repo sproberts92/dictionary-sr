@@ -95,13 +95,15 @@ class Controller:
         self.view  = View(self)
 
         self.populate_word_list()
-        self.populate_definition()
+        self.view.insert_into_text_area('Select a definition from the list or add a new one.')
 
     def populate_word_list(self):
         self.view.set_word_list(self.model.get_word_list())
 
-    def populate_definition(self):
-        self.view.insert_into_text_area("Three")
+    def list_item_selected(self, not_needed):
+        selection = self.view.get_list_selection();
+        word = self.model.get_word(selection)
+        self.view.insert_word_into_text_area(word)
 
 class View(tk.Frame):    
     def __init__(self, vc):
@@ -111,8 +113,13 @@ class View(tk.Frame):
         self.loadView()
     
     def loadView(self):
+        self.menubar = tk.Menu(self.root)
+        self.menubar.add_command(label='File')
+        self.root.config(menu=self.menubar)
+
         self.word_list = tk.Listbox(self.root)
         self.word_list.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
+        self.word_list.bind('<Double-Button-1>', self.vc.list_item_selected)
 
         self.text_area = tk.Text(self.root, state=tk.DISABLED)
         self.text_area.grid(row=0, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
@@ -123,24 +130,44 @@ class View(tk.Frame):
     def init_data(self):
         pass
 
+    def get_list_selection(self):
+        items = self.word_list.curselection()
+        return self.word_list.get(items)
+
     def set_word_list(self, words):
         for w in words:
             self.word_list.insert(tk.END, w)
 
+    def format_word_as_text(self, word):
+        string = '{0}\n\n'.format(word.word)
+        for defn in word.definitions:
+            string += '{0}\n'.format(defn[0])
+            string += '{0}\n\n'.format(defn[1])
+        return string
+
     def insert_into_text_area(self, text):
         self.text_area.configure(state=tk.NORMAL)
+        self.text_area.delete('1.0', tk.END)
         self.text_area.insert(tk.END, text)
         self.text_area.configure(state=tk.DISABLED)
 
+    def insert_word_into_text_area(self, word):
+        string = self.format_word_as_text(word)
+        self.insert_into_text_area(string)
+
 class Model:
     def __init__(self, vc):
-        pass
-        
-    def get_word_list(self):
-        return ['One', 'Two']
+        self.dict = Dictionary('databases/financialance.db')
+        word = Word('Security', [('Noun', 'A tradeable financial asset, such as a share of stock'), ('Noun', 'Proof of ownership of stocks, bonds or other investment instruments.')])
+        self.dict.add_word(word)
+        word = Word('Stock', [('Noun', 'The capital raised by a company through the issue of shares. The total of shares held by an individual shareholder. ')])
+        self.dict.add_word(word)
 
-    def get_word(self):
-        pass
+    def get_word_list(self):
+        return self.dict.get_word_list()
+
+    def get_word(self, name):
+        return self.dict.get_entry(name)
 
 def main():
     app = Controller()
