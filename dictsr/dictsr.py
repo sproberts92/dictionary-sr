@@ -19,7 +19,7 @@ class Database:
             self.conn = sql.connect(db_path)
             self.c = self.conn.cursor()
         else:
-            raise TypeError("db_path must be a string")
+            raise TypeError('db_path must be a string')
 
 class Dictionary(Database):
     def __init__(self, database):
@@ -79,7 +79,7 @@ class Word:
         if type(definitions) is list:
             self.definitions = definitions
         else:
-            raise TypeError("definitions must be a list of strings")
+            raise TypeError('definitions must be a list of strings')
 
     @classmethod
     def from_SQL_tuple(cls, sql_tuple):
