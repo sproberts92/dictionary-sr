@@ -2,19 +2,19 @@ import unittest
 import os.path
 import sqlite3
 
-from dictsr import dictsr
+from dictsr import dbcore
 
 class FunctionEnumTestCase(unittest.TestCase):
     def testEnumVaues(self):
-        self.assertEqual(dictsr.Function.Noun.value, 1)
-        self.assertEqual(dictsr.Function.Verb.value, 2)
-        self.assertEqual(dictsr.Function.Adjective.value, 3)
-        self.assertEqual(dictsr.Function.Adverb.value, 4)
+        self.assertEqual(dbcore.Function.Noun.value, 1)
+        self.assertEqual(dbcore.Function.Verb.value, 2)
+        self.assertEqual(dbcore.Function.Adjective.value, 3)
+        self.assertEqual(dbcore.Function.Adverb.value, 4)
 
 class WordTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.test_word = dictsr.Word("Word", [("Fn1", "Def1"), ("Fn2", "Def2")])
+        self.test_word = dbcore.Word("Word", [("Fn1", "Def1"), ("Fn2", "Def2")])
 
     def tearDown(self):
         del self.test_word
@@ -25,7 +25,11 @@ class WordTestCase(unittest.TestCase):
 
     def test_no_list_definitions(self):
         with self.assertRaises(TypeError):
-            type_test = dictsr.Word("Word", "Function", "Def1")
+            type_test = dbcore.Word("Word", "Function", "Def1")
+
+    def test_add_definition(self):
+        self.test_word.add_definition(('Fn3', 'Def3'))
+        self.assertEqual(self.test_word.definitions, [("Fn1", "Def1"), ("Fn2", "Def2"), ('Fn3', 'Def3')])
 
 def setUpDb(self, db):
     self.path = "test/databases/test.db"
@@ -43,7 +47,7 @@ def tearDownDb(self):
 class DatabaseTestCase(unittest.TestCase):
 
     def setUp(self):
-        setUpDb(self, dictsr.Database)
+        setUpDb(self, dbcore.Database)
 
     def tearDown(self):
         tearDownDb(self)
@@ -53,7 +57,7 @@ class DatabaseTestCase(unittest.TestCase):
 
     def test_argument_types(self):
         with self.assertRaisesRegex(TypeError, "db_path must be a string"):
-            database = dictsr.Database(1)
+            database = dbcore.Database(1)
 
     def test_connection_type(self):
         self.assertIs(type(self.test_db.conn), sqlite3.Connection)
@@ -64,7 +68,7 @@ class DatabaseTestCase(unittest.TestCase):
 class DictionarySetUpTestCase(unittest.TestCase):
 
     def setUp(self):
-        setUpDb(self, dictsr.Dictionary)
+        setUpDb(self, dbcore.Dictionary)
 
     def tearDown(self):
         tearDownDb(self)
@@ -74,7 +78,7 @@ class DictionarySetUpTestCase(unittest.TestCase):
 
     def test_argument_types(self):
         with self.assertRaisesRegex(TypeError, "db_path must be a string"):
-            test_dict = dictsr.Dictionary(1)
+            test_dict = dbcore.Dictionary(1)
 
     def test_connection_type(self):
         self.assertIs(type(self.test_db.conn), sqlite3.Connection)
@@ -93,15 +97,15 @@ class DictionarySetUpTestCase(unittest.TestCase):
         self.assertEqual(self.test_db.c.fetchall(), compare)
 
     def test_create_when_table_already_exists(self):
-        test_db = dictsr.Dictionary(self.path)
+        test_db = dbcore.Dictionary(self.path)
 
 def setUpWord(self, word):
-    self.test_word = dictsr.Word(word, [("Fn1", "Def1"), ("Fn2", "Def2")])
+    self.test_word = dbcore.Word(word, [("Fn1", "Def1"), ("Fn2", "Def2")])
 
 class DictionaryAddWordTestCase(unittest.TestCase):
 
     def setUp(self):
-        setUpDb(self, dictsr.Dictionary)
+        setUpDb(self, dbcore.Dictionary)
         setUpWord(self, "Word")
 
     def tearDown(self):
@@ -140,7 +144,7 @@ class DictionaryAddWordTestCase(unittest.TestCase):
 
 class DictionaryGetWordTestCase(unittest.TestCase):
     def setUp(self):
-        setUpDb(self, dictsr.Dictionary)
+        setUpDb(self, dbcore.Dictionary)
         setUpWord(self, "Word1")
         self.test_db.add_word(self.test_word)
         setUpWord(self, "Word2")
