@@ -19,10 +19,10 @@ class Controller:
         self.view.insert_word_into_text_area(word)
 
     def add_word_callback(self):
-        pass
+        print("add word")
 
     def add_defn_callback(self):
-        pass
+        print("add defn")
 
         # name = self.view.tl_word.entry.get()
         # word = Word(name, [])
@@ -32,11 +32,15 @@ class Controller:
 
 
 class View_pop_up(tk.Frame):
-    def __init__(self, parent, vc, title):
-        self.vc = vc
+    def __init__(self, parent, title, callback):
         self.tl = tk.Toplevel(parent)
         self.tl.title(title)
+        self.callback = callback        
         self.load_view()
+
+    # Destructor ensures that only one add dialogue exists at a time
+    def __del__(self):
+        self.tl.destroy()
 
     def load_view(self):
         # Word name box
@@ -56,7 +60,7 @@ class View_pop_up(tk.Frame):
         self.tl.text_area.grid(row=2, column=0, columnspan=2, sticky=tk.N+tk.S+tk.E+tk.W)
 
         # Add button
-        self.tl.add_button = tk.Button(self.tl, text='Add', command=self.vc.add_word_callback)
+        self.tl.add_button = tk.Button(self.tl, text='Add', command=self.callback)
         self.tl.add_button.grid(row=3, column=0, columnspan=2)
 
         # Grid config
@@ -66,13 +70,13 @@ class View_pop_up(tk.Frame):
 
 class View_add_word(View_pop_up):
     def __init__(self, parent, vc):
-        super(View_add_word, self).__init__(parent, vc, 'Add word')
-        self.loadView()
+        super(View_add_word, self).__init__(parent, 'Add word', vc.add_word_callback)
 
 
 class View_add_defn(View_pop_up):
     def __init__(self, parent, vc):
-        super(View_add_defn, self).__init__(parent, vc, 'Add definition')
+        super(View_add_defn, self).__init__(parent, 'Add definition', vc.add_defn_callback)
+        self.tl.entry.config(state=tk.DISABLED)
 
 
 class View(tk.Frame):
@@ -81,6 +85,9 @@ class View(tk.Frame):
         self.root = tk.Tk()
         self.root.title('Dictionary')
         self.loadView()
+
+    def __del__(self):
+        self.tl.destroy()
 
     def loadView(self):
         self.menubar = tk.Menu(self.root)
@@ -104,10 +111,10 @@ class View(tk.Frame):
         self.root.rowconfigure(0, weight=1)
 
     def create_view_add_word(self):
-        self.view_add_word = View_add_word(self.root, self.vc)
+        self.view_add = View_add_word(self.root, self.vc)
 
     def create_view_add_defn(self):
-        self.view_add_defn = View_add_defn(self.root, self.vc)
+        self.view_add = View_add_defn(self.root, self.vc)
 
     def get_list_selection(self):
         items = self.word_list.curselection()
