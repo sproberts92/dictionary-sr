@@ -43,14 +43,22 @@ class Controller:
 
 
     def add_defn_callback(self):
-        print("add defn")
+        word_type = self.view.view_add.tl.var_menu.get()
+        print(word_type)
+        for w in dbcore.Function:
+            print(w)
 
-        # name = self.view.tl_word.entry.get()
-        # word = Word(name, [])
+        if word_type not in [f.name for f in dbcore.Function]:
+            messagebox.showwarning('Error', 'Please select word type')
+            return
 
-        # self.model.add_word(word)
-        # self.populate_word_list()
+        word_type = self.view.view_add.tl.var_menu.get()
+        definition = self.view.view_add.tl.text_area.get('1.0', tk.END)
 
+        self.model.add_def_to_word(self.word, word_type, definition)
+        self.view.insert_word_into_text_area(self.word)
+
+        self.view.view_add.tl.destroy()
 
 class View_pop_up(tk.Frame):
     def __init__(self, parent, title, callback):
@@ -190,5 +198,5 @@ class Model:
         return dbcore.Word(name, [(word_type, definition)])
 
     def add_def_to_word(self, word, word_type, definition):
-        word.add_definition(definition)
-
+        word.add_definition((word_type, definition))
+        self.dict.add_word(word)
