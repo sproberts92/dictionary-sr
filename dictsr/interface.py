@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import dbcore
 
 
@@ -14,12 +15,32 @@ class Controller:
         self.view.set_word_list(self.model.get_word_list())
 
     def list_item_selected(self, not_needed):
-        selection = self.view.get_list_selection();
-        word = self.model.get_word(selection)
-        self.view.insert_word_into_text_area(word)
+        self.selection = self.view.get_list_selection();
+        self.word = self.model.get_word(self.selection)
+        self.view.insert_word_into_text_area(self.word)
 
     def add_word_callback(self):
-        print("add word")
+        word_to_add = self.view.view_add.tl.entry.get()
+        word_to_add = word_to_add[:1].upper() + word_to_add[1:]
+
+        word_type = self.view.view_add.tl.var_menu.get()
+        print(word_type)
+        for w in dbcore.Function:
+            print(w)
+
+        if word_type not in [f.name for f in dbcore.Function]:
+            messagebox.showwarning('Error', 'Please select word type')
+            return
+
+        definition = self.view.view_add.tl.text_area.get('1.0', tk.END)
+
+        word = self.model.create_word_single_def(word_to_add, word_type, definition)
+        self.model.add_word(word)
+
+        self.view.view_add.tl.destroy()
+
+        self.populate_word_list()
+
 
     def add_defn_callback(self):
         print("add defn")
@@ -35,7 +56,8 @@ class View_pop_up(tk.Frame):
     def __init__(self, parent, title, callback):
         self.tl = tk.Toplevel(parent)
         self.tl.title(title)
-        self.callback = callback        
+        self.tl.config(takefocus=True)
+        self.callback = callback
         self.load_view()
 
     # Destructor ensures that only one add dialogue exists at a time
@@ -46,12 +68,12 @@ class View_pop_up(tk.Frame):
         # Word name box
         self.tl.entry = tk.Entry(self.tl, width=35)
         self.tl.entry.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
-        
+
         # Select box for word type
-        self.tl.var = tk.StringVar()
-        self.tl.var.set('Select word type')
-        
-        self.tl.word_function = tk.OptionMenu(self.tl, self.tl.var, *[e.name for e in dbcore.Function])
+        self.tl.var_menu = tk.StringVar()
+        self.tl.var_menu.set('Select word type')
+
+        self.tl.word_function = tk.OptionMenu(self.tl, self.tl.var_menu, *[e.name for e in dbcore.Function])
         self.tl.word_function.config(width=15)
         self.tl.word_function.grid(row=0, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
 
@@ -86,8 +108,9 @@ class View(tk.Frame):
         self.root.title('Dictionary')
         self.loadView()
 
-    def __del__(self):
-        self.tl.destroy()
+    # def __del__(self):
+        # self.view_add.tl.destroy()
+        # self.root.destroy()
 
     def loadView(self):
         self.menubar = tk.Menu(self.root)
@@ -161,3 +184,11 @@ class Model:
         print(word.word)
         # word.definitions=[('','')]
         self.dict.add_word(word)
+
+    def create_word_single_def(self, name, word_type, definition):
+        # creates a word from a single definition
+        return dbcore.Word(name, [(word_type, definition)])
+
+    def add_def_to_word(self, word, word_type, definition):
+        word.add_definition(definition)
+
