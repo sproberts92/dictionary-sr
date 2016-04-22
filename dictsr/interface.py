@@ -42,6 +42,10 @@ class Controller:
         self.populate_word_list()
 
 
+    def del_word_callback(self):
+        pass
+
+
     def add_defn_callback(self):
         word_type = self.view.view_add.tl.var_menu.get()
         print(word_type)
@@ -59,6 +63,10 @@ class Controller:
         self.view.insert_word_into_text_area(self.word)
 
         self.view.view_add.tl.destroy()
+
+
+    def del_defn_callback(self):
+        pass
 
 class View_pop_up(tk.Frame):
     def __init__(self, parent, title, callback):
@@ -126,17 +134,23 @@ class View(tk.Frame):
         self.root.config(menu=self.menubar)
 
         self.word_list = tk.Listbox(self.root)
-        self.word_list.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
+        self.word_list.grid(row=0, column=0, columnspan=2, sticky=tk.N+tk.S+tk.E+tk.W)
         self.word_list.bind('<Double-Button-1>', self.vc.list_item_selected)
 
         self.text_area = tk.Text(self.root, state=tk.DISABLED, font=("Helvetica",9))
-        self.text_area.grid(row=0, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
+        self.text_area.grid(row=0, column=2, columnspan=2, sticky=tk.N+tk.S+tk.E+tk.W)
 
         self.button_add_word = tk.Button(self.root, text='Add word', command=self.create_view_add_word)
         self.button_add_word.grid(row=2, column=0)
 
+        self.button_delete_word = tk.Button(self.root, text='Delete word', command=self.vc.del_word_callback)
+        self.button_delete_word.grid(row=2, column=1)
+
         self.button_add_definition = tk.Button(self.root, text='Add definition', command=self.create_view_add_defn)
-        self.button_add_definition.grid(row=2, column=1)
+        self.button_add_definition.grid(row=2, column=2, sticky=tk.E)
+
+        self.button_delete_definition = tk.Button(self.root, text='Delete definition', command=self.create_view_add_defn)
+        self.button_delete_definition.grid(row=2, column=3, sticky=tk.W)
 
         self.root.columnconfigure(1, weight=1)
         self.root.rowconfigure(0, weight=1)
