@@ -164,5 +164,29 @@ class DictionaryGetWordTestCase(unittest.TestCase):
         self.assertEqual(entry.word, self.test_word.word)
         self.assertEqual(set(entry.definitions), set(self.test_word.definitions))
 
+class DictionaryDeleteWordTestCase(unittest.TestCase):
+    def setUp(self):
+        setUpDb(self, dbcore.Dictionary)
+        setUpWord(self, "Word1")
+        self.test_db.add_word(self.test_word)
+        setUpWord(self, "Word2")
+        self.test_db.add_word(self.test_word)
+
+    def tearDown(self):
+        tearDownDb(self)
+
+    def test_get_word_from_db(self):
+        self.test_db.delete_entry(self.test_word.word)
+
+        extracted_words = self.test_db.get_word_list()
+
+        self.assertEqual(set(extracted_words), set(['Word1']))
+
+    def test_get_entry(self):
+        entry = self.test_db.get_entry("Word2")
+
+        self.assertEqual(entry.word, self.test_word.word)
+        self.assertEqual(set(entry.definitions), set(self.test_word.definitions))
+
 if __name__ == '__main__':
     unittest.main()

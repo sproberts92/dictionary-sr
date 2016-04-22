@@ -71,6 +71,13 @@ class Dictionary(Database):
 
         return Word.from_SQL_tuple(self.c.fetchall())
 
+    def delete_entry(self, word_str):
+        self.c.execute('''
+            DELETE 
+            FROM dictionary
+            WHERE word = '{w}'
+        '''.format(w=word_str))
+
 class Word:
     def __init__(self, word, definitions):
         self.word = word
