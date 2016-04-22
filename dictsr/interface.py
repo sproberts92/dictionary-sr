@@ -43,7 +43,8 @@ class Controller:
 
 
     def del_word_callback(self):
-        pass
+        self.model.delete_word(self.word)
+        self.populate_word_list()
 
 
     def add_defn_callback(self):
@@ -214,3 +215,6 @@ class Model:
     def add_def_to_word(self, word, word_type, definition):
         word.add_definition((word_type, definition))
         self.dict.add_word(word)
+
+    def delete_word(self, word):
+        self.dict.delete_entry(word.word)
